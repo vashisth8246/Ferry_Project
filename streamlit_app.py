@@ -8,6 +8,7 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime, timedelta
+import os
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -46,26 +47,42 @@ st.markdown("""
 @st.cache_data
 def load_data():
     try:
+        # Try relative path first
         df = pd.read_csv('ferry_tickets_cleaned.csv')
         df['Timestamp'] = pd.to_datetime(df['Timestamp'])
         df = df.sort_values('Timestamp').reset_index(drop=True)
         return df
     except FileNotFoundError:
-        st.error("Data file not found. Please ensure ferry_tickets_cleaned.csv is in the app directory.")
-        return pd.DataFrame()
+        try:
+            # Try absolute path
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            csv_path = os.path.join(script_dir, 'ferry_tickets_cleaned.csv')
+            df = pd.read_csv(csv_path)
+            df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+            df = df.sort_values('Timestamp').reset_index(drop=True)
+            return df
+        except FileNotFoundError:
+            st.error("Data file not found. Please ensure ferry_tickets_cleaned.csv is in the app directory.")
+            return pd.DataFrame()
 
 @st.cache_data
 def load_model_results():
-    return pd.read_csv('all_model_results.csv', index_col=0)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(script_dir, 'all_model_results.csv')
+    return pd.read_csv(csv_path, index_col=0)
 
 @st.cache_data
 def load_uncertainty_results():
-    return pd.read_csv('uncertainty_results.csv')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(script_dir, 'uncertainty_results.csv')
+    return pd.read_csv(csv_path)
 
 @st.cache_data
 def load_eda_summary():
     import json
-    with open('eda_plots/summary_statistics.json', 'r') as f:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    json_path = os.path.join(script_dir, 'eda_plots', 'summary_statistics.json')
+    with open(json_path, 'r') as f:
         return json.load(f)
 
 # Main application
