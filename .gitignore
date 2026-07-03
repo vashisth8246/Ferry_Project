@@ -1,0 +1,7 @@
+node_modules/ 
+ferry_tickets_features.csv
+*.csv
+__pycache__/
+.env 
+dist/ 
+
