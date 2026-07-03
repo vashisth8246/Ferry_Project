@@ -1,7 +1,12 @@
-node_modules/ 
+node_modules/
 ferry_tickets_features.csv
-*.csv
 __pycache__/
-.env 
-dist/ 
+.env
+dist/
 
+# Keep these CSV files for Streamlit deployment
+!ferry_tickets_cleaned.csv
+!all_model_results.csv
+!uncertainty_results.csv
+!model_results.csv
+!timeseries_results.csv

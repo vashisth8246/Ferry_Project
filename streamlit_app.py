@@ -45,10 +45,14 @@ st.markdown("""
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_csv('ferry_tickets_cleaned.csv')
-    df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-    df = df.sort_values('Timestamp').reset_index(drop=True)
-    return df
+    try:
+        df = pd.read_csv('ferry_tickets_cleaned.csv')
+        df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+        df = df.sort_values('Timestamp').reset_index(drop=True)
+        return df
+    except FileNotFoundError:
+        st.error("Data file not found. Please ensure ferry_tickets_cleaned.csv is in the app directory.")
+        return pd.DataFrame()
 
 @st.cache_data
 def load_model_results():
