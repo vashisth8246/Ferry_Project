@@ -11,6 +11,7 @@ The original research dashboard remains at http://localhost:8501.
 ## Product workspace
 
 - Overview with daily demand, capacity, utilization and queue signals.
+- Refresh overview, scenario and saved-plan data directly from the workspace header.
 - Demand and capacity lab: choose a planning date, vessel seats, sailing frequency,
   demand adjustment, ticket value and variable sailing cost.
 - Hourly queue carryover, suggested departures and scenario economics.

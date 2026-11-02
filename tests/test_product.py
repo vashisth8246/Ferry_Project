@@ -9,6 +9,7 @@ def product_client(tmp_path):
 def test_product_assets(product_client):
     for path in ['/app', '/app/assets/style.css', '/app/assets/app.js']:
         assert product_client.get(path).status_code == 200
+    assert 'id="refresh-workspace"' in product_client.get('/app').get_data(as_text=True)
 
 def test_scenario_queue_and_economics(product_client):
     body={'date':'2026-07-18', 'seats':25, 'departures':1, 'fare':9, 'cost':350}
