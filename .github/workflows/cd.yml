@@ -6,6 +6,9 @@ on:
     branches: [main]
 permissions:
   contents: read
+concurrency:
+  group: render-main
+  cancel-in-progress: false
 jobs:
   publish:
     if: >-
@@ -13,7 +16,7 @@ jobs:
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     permissions:
       contents: read
       packages: write
@@ -41,12 +44,12 @@ jobs:
             ${{ steps.image.outputs.name }}:${{ github.event.workflow_run.head_sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - name: Trigger configured hosting deployment
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Deploy tested commit to Render and verify live health
         env:
           DEPLOY_HOOK_URL: ${{ secrets.DEPLOY_HOOK_URL }}
-        run: |
-          if [ -n "$DEPLOY_HOOK_URL" ]; then
-            curl --fail-with-body --request POST "$DEPLOY_HOOK_URL"
-          else
-            echo 'Image published. No hosting deploy hook is configured.' >> "$GITHUB_STEP_SUMMARY"
-          fi
+          DEPLOY_COMMIT: ${{ github.event.workflow_run.head_sha }}
+          RENDER_APP_URL: ${{ vars.RENDER_APP_URL }}
+        run: python scripts/deploy_render.py

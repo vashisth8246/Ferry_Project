@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from functools import lru_cache
 import json
+import os
 import math
 import sqlite3
 import uuid
@@ -133,6 +134,11 @@ def interface():
 @product.get('/app/assets/<path:name>')
 def assets(name):
     return send_from_directory(ROOT / 'frontend', name)
+
+
+@product.get('/api/product/version')
+def version():
+    return jsonify({'service': 'Tidal', 'commit': os.environ.get('RENDER_GIT_COMMIT', os.environ.get('APP_COMMIT_SHA', 'local'))})
 
 
 @product.get('/api/product/overview')

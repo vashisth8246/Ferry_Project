@@ -309,3 +309,22 @@ docker run -d -p 8501:8501 -p 5000:5000 ghcr.io/vashisth8246/ferry_project:lates
 
 The generated 347 MB `ferry_tickets_features.csv` is excluded from the Docker
 context; the dashboard uses the cleaned data and analysis outputs included in Git.
+
+## Render deployment
+
+Create a Render Blueprint from this repository's `render.yaml`. The default is a
+free shared demo, with automatic Render deploys disabled so GitHub Actions gates
+updates. The initial Blueprint deployment is initiated by Render.
+
+The public product path is `/app`, health path `/health`, and version path
+`/api/product/version`. Render runs only the product/API using `render-start.sh`.
+
+After service creation:
+1. Add its secret deploy hook as GitHub repository secret `DEPLOY_HOOK_URL`.
+2. Add its public base URL as repository variable `RENDER_APP_URL` (no `/app`).
+3. Push to main. CI tests the commit; CD publishes its image, asks Render to deploy
+   that exact Git commit, and waits for its version endpoint and health check.
+
+Free Render storage is ephemeral: saved plans can disappear on restart or deploy.
+For durable plans, select a paid service and mount a persistent disk at
+`/app/instance`. Do not put Render deploy hook URLs or API credentials in Git.
