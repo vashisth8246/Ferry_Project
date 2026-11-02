@@ -44,8 +44,8 @@ jobs:
       - name: Verify both services and their connection
         run: |
           docker run -d --name ferry-test -p 5000:5000 -p 8501:8501 ferry:test
-          curl --fail --retry 30 --retry-connrefused --retry-delay 2 http://localhost:5000/health
-          curl --fail --retry 30 --retry-connrefused --retry-delay 2 http://localhost:8501/_stcore/health
+          curl --fail --retry 30 --retry-all-errors --retry-delay 2 --max-time 10 http://localhost:5000/health
+          curl --fail --retry 30 --retry-all-errors --retry-delay 2 --max-time 10 http://localhost:8501/_stcore/health
           docker exec ferry-test python -c "from api_client import fetch_json; assert fetch_json('/api/data/summary')['total_records'] > 0; assert fetch_json('/api/models/results'); assert fetch_json('/api/eda/summary'); assert fetch_json('/api/uncertainty/predictions', n=5)"
       - name: Render dashboard pages with live API data
         run: docker exec ferry-test python scripts/verify_dashboard.py
