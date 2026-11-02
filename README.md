@@ -1,3 +1,81 @@
+# Tidal — Ferry operations intelligence
+
+Tidal turns the Toronto Island ferry research project into an interactive operating
+workspace. Open **http://localhost:5000/app** after starting the project.
+The original research dashboard remains at http://localhost:8501.
+
+## Product workspace
+
+- Overview with daily demand, capacity, utilization and queue signals.
+- Demand and capacity lab: choose a planning date, vessel seats, sailing frequency,
+  demand adjustment, ticket value and variable sailing cost.
+- Hourly queue carryover, suggested departures and scenario economics.
+- Saved operating plans backed by SQLite, plus CSV and JSON exports.
+- Network seasonality and model evidence with a chronological holdout.
+- Responsive desktop and mobile layouts, accessible controls and error states.
+
+### Start locally
+
+```powershell
+pip install -r requirements.txt
+.\start-local.ps1
+```
+
+Go to http://localhost:5000/app. Product UI and product API use the same server,
+so the new interface needs no frontend build step or separate CORS configuration.
+
+### Persistent plans
+
+Local plans are stored in `instance/plans.sqlite3` (excluded from Git and images).
+For Docker, attach a persistent volume at `/app/instance`:
+
+```bash
+docker run -d -p 5000:5000 -p 8501:8501 -v tidal-plans:/app/instance ghcr.io/vashisth8246/ferry_project:latest
+```
+
+This is a shared investor demo workspace, without authentication or tenant isolation.
+Do not expose it as an authenticated customer service. Production rollout requires
+operator identity, permissions, backups, monitoring, current ticket/boarding feeds,
+and route/vessel constraints. Plans do not dispatch actual vessels.
+
+### What the product model does
+
+The running product uses mean hourly ticket sales grouped by month, weekend and
+hour, with an hourly mean fallback. Historical variation is shown as mean plus or
+minus 1.28 standard deviations, clipped at zero. This is **not a calibrated
+prediction interval**. Evaluation holds out the last 28 calendar days before fitting.
+Planning uses all available observations, ending December 21, 2025. No saved
+XGBoost artifact, live ticket feed, weather, or events integration is claimed.
+Ticket sales are a planning proxy rather than confirmed boardings. Financial
+results use user-selected CAD assumptions and exclude fixed costs.
+
+### Investor demo flow
+
+1. Open Overview and explain the demand/capacity mismatch.
+2. Open Demand & capacity and raise departures per hour from 2 to 3, then select
+   **Update scenario**. Compare the queue and contribution.
+3. Save a named operating plan and reopen it from Saved plans.
+4. Export the hourly CSV for operations review.
+5. Open Model & data to show the evaluation method and limitations.
+
+No market valuation, customer traction or verified commercial savings are implied.
+
+### Validation
+
+```bash
+python -m pytest tests -q
+node --check frontend/app.js
+```
+
+GitHub Actions tests the APIs and product assets, builds the container, checks
+both services and product endpoints, and renders the original research dashboard.
+CD publishes the successful main commit to GitHub Container Registry. Hosting
+remains optional through `DEPLOY_HOOK_URL`.
+
+---
+
+## Original research documentation
+
 # Ferry Ticket Demand Forecasting System
 
 A comprehensive machine learning and time-series forecasting system for predicting short-term ferry ticket demand to Toronto Island Park.

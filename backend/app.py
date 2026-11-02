@@ -174,6 +174,9 @@ def eda_daily():
     return jsonify(daily.to_dict(orient="index"))
 
 
+from backend.product import product
+app.register_blueprint(product)
+
 # ── Run ─────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

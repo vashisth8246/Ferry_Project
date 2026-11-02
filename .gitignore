@@ -13,3 +13,5 @@ venv/
 *.log
 .mypy_cache/
 ferry_tickets_features.csv
+
+instance/

@@ -17,3 +17,5 @@ node_modules/
 coverage.xml
 
 ferry_tickets_features.csv
+
+instance/
