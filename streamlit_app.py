@@ -48,7 +48,7 @@ from api_client import fetch_json
 @st.cache_data(ttl=60)
 def load_data():
     df = pd.DataFrame(fetch_json('/api/data/recent', n=1000000))
-    df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+    df['Timestamp'] = pd.to_datetime(df['Timestamp'], format='%a, %d %b %Y %H:%M:%S GMT')
     return df.sort_values('Timestamp').reset_index(drop=True)
 
 @st.cache_data(ttl=60)
