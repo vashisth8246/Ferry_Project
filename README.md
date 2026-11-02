@@ -202,3 +202,32 @@ For questions or support, please contact the project team at Toronto Government 
 
 **Project Status:** Complete  
 **Last Updated:** July 2026
+
+## CI/CD and connected application
+
+The Streamlit dashboard loads its data through the Flask API. Start both on Windows:
+
+```powershell
+pip install -r requirements.txt
+.\start-local.ps1
+```
+
+Open http://localhost:8501 (API: http://localhost:5000/health).
+Set `BACKEND_URL` when running the dashboard against a different API server.
+For separate terminals, run `python -m backend.app` and `python -m streamlit run streamlit_app.py`.
+
+GitHub Actions runs syntax checks, API/client tests, a Docker build, and mandatory
+health checks for both services on pushes and pull requests to main. After a
+successful main push, CD publishes the tested commit as
+`ghcr.io/vashisth8246/ferry_project:latest` and an immutable full commit tag.
+Container publishing uses the built-in GitHub token. An optional repository secret
+`DEPLOY_HOOK_URL` triggers an existing hosting service after publication; a hosting
+account must be configured separately. Image publication alone does not create a
+hosted website. The container exposes dashboard port 8501 and API port 5000.
+
+```bash
+docker run -d -p 8501:8501 -p 5000:5000 ghcr.io/vashisth8246/ferry_project:latest
+```
+
+The generated 347 MB `ferry_tickets_features.csv` is excluded from the Docker
+context; the dashboard uses the cleaned data and analysis outputs included in Git.

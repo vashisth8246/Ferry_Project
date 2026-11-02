@@ -1,12 +1,15 @@
 node_modules/
-ferry_tickets_features.csv
-__pycache__/
 .env
 dist/
-
-# Keep these CSV files for Streamlit deployment
-!ferry_tickets_cleaned.csv
-!all_model_results.csv
-!uncertainty_results.csv
-!model_results.csv
-!timeseries_results.csv
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+coverage.xml
+*.egg-info/
+.venv/
+venv/
+*.log
+.mypy_cache/
+ferry_tickets_features.csv

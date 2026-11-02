@@ -8,7 +8,6 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime, timedelta
-import os
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -43,47 +42,26 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Load data
-@st.cache_data
+# Fetch dashboard data through the Flask API.
+from api_client import fetch_json
+
+@st.cache_data(ttl=60)
 def load_data():
-    try:
-        # Try relative path first
-        df = pd.read_csv('ferry_tickets_cleaned.csv')
-        df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-        df = df.sort_values('Timestamp').reset_index(drop=True)
-        return df
-    except FileNotFoundError:
-        try:
-            # Try absolute path
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            csv_path = os.path.join(script_dir, 'ferry_tickets_cleaned.csv')
-            df = pd.read_csv(csv_path)
-            df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-            df = df.sort_values('Timestamp').reset_index(drop=True)
-            return df
-        except FileNotFoundError:
-            st.error("Data file not found. Please ensure ferry_tickets_cleaned.csv is in the app directory.")
-            return pd.DataFrame()
+    df = pd.DataFrame(fetch_json('/api/data/recent', n=1000000))
+    df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+    return df.sort_values('Timestamp').reset_index(drop=True)
 
-@st.cache_data
+@st.cache_data(ttl=60)
 def load_model_results():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.join(script_dir, 'all_model_results.csv')
-    return pd.read_csv(csv_path, index_col=0)
+    return pd.DataFrame.from_dict(fetch_json('/api/models/results'), orient='index')
 
-@st.cache_data
+@st.cache_data(ttl=60)
 def load_uncertainty_results():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.join(script_dir, 'uncertainty_results.csv')
-    return pd.read_csv(csv_path)
+    return pd.DataFrame(fetch_json('/api/uncertainty/predictions', n=1000000))
 
-@st.cache_data
+@st.cache_data(ttl=60)
 def load_eda_summary():
-    import json
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    json_path = os.path.join(script_dir, 'eda_plots', 'summary_statistics.json')
-    with open(json_path, 'r') as f:
-        return json.load(f)
+    return fetch_json('/api/eda/summary')
 
 # Main application
 def main():
@@ -91,11 +69,16 @@ def main():
                 unsafe_allow_html=True)
     
     # Load data
-    df = load_data()
-    model_results = load_model_results()
-    uncertainty_results = load_uncertainty_results()
-    eda_summary = load_eda_summary()
-    
+    try:
+        df = load_data()
+        model_results = load_model_results()
+        uncertainty_results = load_uncertainty_results()
+        eda_summary = load_eda_summary()
+    except RuntimeError as exc:
+        st.error(str(exc))
+        st.stop()
+    st.sidebar.success('Backend connected')
+
     # Sidebar navigation
     st.sidebar.title("Navigation")
     page = st.sidebar.radio(

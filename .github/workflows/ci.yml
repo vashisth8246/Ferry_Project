@@ -1,0 +1,54 @@
+name: CI - Test and Build
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements.txt flake8
+      - run: flake8 . --exclude=.git,.venv,venv --select=E9,F63,F7,F82 --show-source
+      - run: pytest tests/ -v --cov=backend --cov-report=xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: ferry:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Verify both services and their connection
+        run: |
+          docker run -d --name ferry-test -p 5000:5000 -p 8501:8501 ferry:test
+          curl --fail --retry 30 --retry-connrefused --retry-delay 2 http://localhost:5000/health
+          curl --fail --retry 30 --retry-connrefused --retry-delay 2 http://localhost:8501/_stcore/health
+          docker exec ferry-test python -c "from api_client import fetch_json; assert fetch_json('/api/data/summary')['total_records'] > 0; assert fetch_json('/api/models/results'); assert fetch_json('/api/eda/summary'); assert fetch_json('/api/uncertainty/predictions', n=5)"
+      - name: Container logs and cleanup
+        if: always()
+        run: |
+          docker logs ferry-test || true
+          docker rm -f ferry-test || true
