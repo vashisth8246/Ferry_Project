@@ -5,8 +5,8 @@ services:
     repo: https://github.com/vashisth8246/Ferry_Project
     branch: main
     plan: free
-    region: oregon
-    autoDeployTrigger: 'off'
+    region: virginia
+    autoDeployTrigger: commit
     dockerfilePath: ./Dockerfile
     dockerContext: .
     dockerCommand: bash render-start.sh

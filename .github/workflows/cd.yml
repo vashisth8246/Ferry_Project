@@ -47,9 +47,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Deploy tested commit to Render and verify live health
+      - name: Verify Render deployment (or trigger configured deploy hook)
         env:
           DEPLOY_HOOK_URL: ${{ secrets.DEPLOY_HOOK_URL }}
           DEPLOY_COMMIT: ${{ github.event.workflow_run.head_sha }}
+          RENDER_AUTO_DEPLOY: ${{ vars.RENDER_AUTO_DEPLOY }}
           RENDER_APP_URL: ${{ vars.RENDER_APP_URL }}
         run: python scripts/deploy_render.py

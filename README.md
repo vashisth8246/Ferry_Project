@@ -312,19 +312,25 @@ context; the dashboard uses the cleaned data and analysis outputs included in Gi
 
 ## Render deployment
 
-Create a Render Blueprint from this repository's `render.yaml`. The default is a
-free shared demo, with automatic Render deploys disabled so GitHub Actions gates
-updates. The initial Blueprint deployment is initiated by Render.
+Live product: https://tidal-ferry.onrender.com/app
 
-The public product path is `/app`, health path `/health`, and version path
-`/api/product/version`. Render runs only the product/API using `render-start.sh`.
+Render deploys the GitHub repository's `main` branch using **On Commit**.
+Every push starts a deployment immediately. GitHub Actions runs CI in parallel;
+after CI passes, CD publishes the container and verifies the same commit on the
+live version endpoint. CI does not block Render's On Commit deployment.
 
-After service creation:
-1. Add its secret deploy hook as GitHub repository secret `DEPLOY_HOOK_URL`.
-2. Add its public base URL as repository variable `RENDER_APP_URL` (no `/app`).
-3. Push to main. CI tests the commit; CD publishes its image, asks Render to deploy
-   that exact Git commit, and waits for its version endpoint and health check.
+Repository variables:
+- `RENDER_AUTO_DEPLOY=true`: verify Render's automatic deploy without a duplicate hook.
+- `RENDER_APP_URL=https://tidal-ferry.onrender.com`: public base URL for health checks.
 
-Free Render storage is ephemeral: saved plans can disappear on restart or deploy.
-For durable plans, select a paid service and mount a persistent disk at
-`/app/instance`. Do not put Render deploy hook URLs or API credentials in Git.
+Render runs `bash render-start.sh`, with health path `/health`. The product UI
+and API share one server. The legacy Streamlit research dashboard runs locally
+and in the general container, but is not started by the Render command.
+
+The `render.yaml` file reproduces the free service configuration. Free storage is
+ephemeral: saved plans can disappear on restart or deploy, and idle services sleep.
+For durable plans, select a paid service and mount a disk at `/app/instance`.
+
+An alternative CI-gated mode is supported by disabling On Commit, setting
+`RENDER_AUTO_DEPLOY=false`, and saving the private hook as `DEPLOY_HOOK_URL`.
+Do not commit deploy hooks or API credentials to Git.
