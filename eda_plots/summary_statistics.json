@@ -1,0 +1,14 @@
+{
+  "total_records": 261538,
+  "date_range_start": "2015-05-01 13:30:00",
+  "date_range_end": "2025-12-21 22:30:00",
+  "avg_sales": 49.59910605724598,
+  "avg_redemptions": 48.885030091229574,
+  "max_sales": "7229",
+  "max_redemptions": "7216",
+  "peak_hour_sales": "12",
+  "peak_hour_redemptions": "12",
+  "peak_day_sales": "Saturday",
+  "peak_day_redemptions": "Sunday",
+  "sales_redemption_correlation": 0.9181628994137814
+}

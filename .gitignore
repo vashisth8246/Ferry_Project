@@ -1,0 +1,17 @@
+node_modules/
+.env
+dist/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+coverage.xml
+*.egg-info/
+.venv/
+venv/
+*.log
+.mypy_cache/
+ferry_tickets_features.csv
+
+instance/

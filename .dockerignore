@@ -1,0 +1,21 @@
+# Docker
+*.pyc
+__pycache__/
+.git/
+.github/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+node_modules/
+.env
+*.log
+.mypy_cache/
+.pytest_cache/
+.coverage
+coverage.xml
+
+ferry_tickets_features.csv
+
+instance/

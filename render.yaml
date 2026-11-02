@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: tidal-ferry
+    runtime: docker
+    repo: https://github.com/vashisth8246/Ferry_Project
+    branch: main
+    plan: free
+    region: virginia
+    autoDeployTrigger: commit
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: bash render-start.sh
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: '10000'
+      - key: PYTHONUNBUFFERED
+        value: '1'

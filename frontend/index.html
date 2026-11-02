@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111e2b"><title>Tidal — Ferry intelligence</title><link rel="stylesheet" href="/app/assets/style.css"></head>
+<body>
+<aside class="sidebar" id="sidebar">
+<a class="brand" href="#overview"><span class="brand-mark">≈</span> tidal<span class="brand-dot">.</span></a>
+<div class="workspace"><span class="workspace-icon">T</span><div>Toronto Island<span>Operations workspace</span></div><span class="chevron">⌄</span></div>
+<div class="nav-label">WORKSPACE</div>
+<nav aria-label="Main navigation">
+<button data-page="overview" class="active"><span data-icon="grid"></span>Overview</button>
+<button data-page="planner"><span data-icon="wave"></span>Demand & capacity<span class="nav-pill">LAB</span></button>
+<button data-page="insights"><span data-icon="chart"></span>Network insights</button>
+<button data-page="plans"><span data-icon="folder"></span>Saved plans<span id="plan-count" class="count">0</span></button>
+<div class="nav-label secondary">INTELLIGENCE</div>
+<button data-page="evidence"><span data-icon="shield"></span>Model & data</button>
+</nav>
+<div class="sidebar-bottom"><div class="demo-tag"><span class="pulse"></span> Investor demo workspace</div><p>Better crossings.<br>Smarter decisions.</p><div class="profile"><span class="avatar">OP</span><div>Operations team<small>Planning sandbox</small></div><span>⋯</span></div></div>
+</aside>
+<div class="shell">
+<header><div class="breadcrumb"><button id="menu" aria-label="Toggle navigation">☰</button>Workspace <span>/</span> <strong id="crumb">Overview</strong></div><div class="header-right"><span class="system"><i></i>Backend connected</span><span class="header-divider"></span><span class="small-avatar">OP</span></div></header>
+<main id="main" tabindex="-1"><div id="notice" role="alert" hidden></div><div id="content"><div class="loading"><span class="spinner"></span>Connecting to your operations workspace…</div></div></main>
+<footer><span><b>tidal.</b> Intelligence for the water ahead.</span><span>Toronto Island · Historical data + scenario planning</span></footer>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<dialog id="save-dialog"><form id="save-form"><div class="eyebrow">OPERATING PLAN</div><h2>Keep a better plan.</h2><p>Save the assumptions and results to your workspace.</p><label for="plan-name">Plan name</label><input id="plan-name" maxlength="80" required placeholder="e.g. Summer Saturday · extra capacity"><div class="dialog-actions"><button type="button" class="btn" id="cancel-save">Cancel</button><button class="btn primary" type="submit">Save plan <span>↗</span></button></div></form></dialog>
+<script src="/app/assets/app.js"></script></body></html>
